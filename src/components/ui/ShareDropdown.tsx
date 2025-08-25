@@ -1,20 +1,18 @@
-'use client'
-
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Copy, Mail, MessageCircle } from 'lucide-react'
 
-export default function ShareDropdown({ productUrl, productTitle, isOpen, onClose, triggerRef }) {
+export default function ShareDropdown({ productUrl, productTitle, isOpen, onClose, triggerRef }: { productUrl: string; productTitle: string; isOpen: boolean; onClose: () => void; triggerRef: React.RefObject<HTMLElement> }) {
   const [copied, setCopied] = useState(false)
-  const dropdownRef = useRef(null)
+  const dropdownRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target) &&
+        !dropdownRef.current.contains(event.target as Node) &&
         triggerRef.current &&
-        !triggerRef.current.contains(event.target)
+        !triggerRef.current.contains(event.target as Node)
       ) {
         onClose()
       }
@@ -84,5 +82,3 @@ export default function ShareDropdown({ productUrl, productTitle, isOpen, onClos
     </AnimatePresence>
   )
 }
-
-

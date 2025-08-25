@@ -1,26 +1,25 @@
-'use client'
-
 import { motion } from 'framer-motion'
 import { Heart, Share2, Trash2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useState, useRef } from 'react'
-import ShareDropdown from '../ui/ShareDropdown.jsx'
+import ShareDropdown from '../ui/ShareDropdown'
+import { Product } from '../../types'
 
-export default function ProductCard({ product, isFavorited, onToggleFavorite, isAdmin, onDeleteProduct }) {
+export default function ProductCard({ product, isFavorited, onToggleFavorite, isAdmin, onDeleteProduct }: { product: Product; isFavorited: boolean; onToggleFavorite: () => void; isAdmin?: boolean; onDeleteProduct?: () => void }) {
   const navigate = useNavigate()
   const [isShareOpen, setIsShareOpen] = useState(false)
-  const shareButtonRef = useRef(null)
+  const shareButtonRef = useRef<HTMLButtonElement | null>(null)
 
   const handleProductClick = () => {
     navigate(`/product/${product.id}`)
   }
 
-  const handleFavoriteClick = (e) => {
+  const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     onToggleFavorite()
   }
 
-  const handleShareClick = (e) => {
+  const handleShareClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     setIsShareOpen(!isShareOpen)
   }
@@ -92,5 +91,3 @@ export default function ProductCard({ product, isFavorited, onToggleFavorite, is
     </motion.div>
   )
 }
-
-

@@ -1,12 +1,10 @@
-'use client'
-
 import { useEffect, useRef } from 'react'
 import { Search, User } from 'lucide-react'
-import { useMarketplace } from '../../state/MarketplaceContext.jsx'
+import { useMarketplace } from '../../state/MarketplaceContext'
 import { useNavigate } from 'react-router-dom'
 
-export default function Header({ query, setQuery }) {
-  const headerRef = useRef(null)
+export default function Header({ query, setQuery }: { query: string; setQuery: (s: string) => void }) {
+  const headerRef = useRef<HTMLDivElement | null>(null)
   const { setUser } = useMarketplace()
   const navigate = useNavigate()
 
@@ -14,7 +12,7 @@ export default function Header({ query, setQuery }) {
     const onScroll = () => {
       if (!headerRef.current) return
       const y = window.scrollY
-      headerRef.current.style.backdropFilter = `blur(${Math.min(12, y / 30)}px)`
+      headerRef.current!.style.backdropFilter = `blur(${Math.min(12, y / 30)}px)`
     }
     window.addEventListener('scroll', onScroll)
     return () => window.removeEventListener('scroll', onScroll)
@@ -45,5 +43,3 @@ export default function Header({ query, setQuery }) {
     </div>
   )
 }
-
-

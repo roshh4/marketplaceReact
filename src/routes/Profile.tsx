@@ -2,24 +2,26 @@
 
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMarketplace } from '../state/MarketplaceContext.jsx'
-import Marketplace from '../components/marketplace/Marketplace.jsx'
-import ChatPage from '../components/chat/ChatPage.jsx'
+import { useMarketplace } from '../state/MarketplaceContext'
+import Profile from '../components/profile/Profile'
+import ChatPage from '../components/chat/ChatPage'
 import { motion, AnimatePresence } from 'framer-motion'
 
-export default function MarketplaceRoute() {
+export default function ProfileRoute() {
   const navigate = useNavigate()
-  const { user } = useMarketplace()
-  const [activeChat, setActiveChat] = useState(null)
+  const { user, isHydrated } = useMarketplace()
+  const [activeChat, setActiveChat] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!isHydrated) return
     if (!user) navigate('/')
-  }, [user, navigate])
+  }, [user, navigate, isHydrated])
 
-  const openChat = (chatId) => setActiveChat(chatId)
+  const handleBack = () => navigate('/marketplace')
+  const handleOpenChat = (chatId: string) => setActiveChat(chatId)
   const closeChat = () => setActiveChat(null)
 
-  if (!user) {
+  if (!isHydrated || !user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#0b1220] to-[#061028] text-white font-sans flex items-center justify-center">
         <div className="text-center">
@@ -32,8 +34,8 @@ export default function MarketplaceRoute() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#0b1220] to-[#061028] text-white font-sans">
-      <motion.div initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -40, opacity: 0 }}>
-        <Marketplace onOpenChat={openChat} />
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+        <Profile onOpenChat={handleOpenChat} onBack={handleBack} />
       </motion.div>
       <AnimatePresence>{activeChat && <ChatPage chatId={activeChat} onClose={closeChat} />}</AnimatePresence>
     </div>

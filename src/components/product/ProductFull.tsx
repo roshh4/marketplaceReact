@@ -1,18 +1,16 @@
-'use client'
-
 import { useState, useRef } from 'react'
 import { ArrowLeft, Heart, Share2, Trash2 } from 'lucide-react'
-import { useMarketplace } from '../../state/MarketplaceContext.jsx'
-import GlassCard from '../ui/GlassCard.jsx'
-import ShareDropdown from '../ui/ShareDropdown.jsx'
+import { useMarketplace } from '../../state/MarketplaceContext'
+import GlassCard from '../ui/GlassCard'
+import ShareDropdown from '../ui/ShareDropdown'
 
-export default function ProductFull({ productId, onBack, onOpenChat }) {
+export default function ProductFull({ productId, onBack, onOpenChat }: { productId: string; onBack: () => void; onOpenChat: (c: string) => void }) {
   const { products, addChatIfMissing, user, createPurchaseRequest, setProducts, favorites, toggleFavorite } = useMarketplace()
   const prod = products.find((p) => p.id === productId)
   const [mainIndex, setMainIndex] = useState(0)
   const [showRequestSent, setShowRequestSent] = useState(false)
   const [isShareOpen, setIsShareOpen] = useState(false)
-  const shareButtonRef = useRef(null)
+  const shareButtonRef = useRef<HTMLButtonElement | null>(null)
 
   if (!prod) return <div className="p-8">Product not found</div>
 
@@ -151,5 +149,3 @@ export default function ProductFull({ productId, onBack, onOpenChat }) {
     </div>
   )
 }
-
-

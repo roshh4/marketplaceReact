@@ -1,35 +1,34 @@
-'use client'
-
 import { useState, useRef } from 'react'
 import { ArrowLeft, X } from 'lucide-react'
-import { useMarketplace } from '../../state/MarketplaceContext.jsx'
-import { aiRefine } from '../../utils.js'
-import GlassCard from '../ui/GlassCard.jsx'
-import Spinner from '../ui/Spinner.jsx'
+import { useMarketplace } from '../../state/MarketplaceContext'
+import { aiRefine } from '../../utils'
+import GlassCard from '../ui/GlassCard'
+import Spinner from '../ui/Spinner'
+import { Product } from '../../types'
 
-export default function ListItemPage({ onDone }) {
+export default function ListItemPage({ onDone }: { onDone: () => void }) {
   const { addProduct, user } = useMarketplace()
   const [title, setTitle] = useState('')
   const [price, setPrice] = useState(0)
-  const [condition, setCondition] = useState('Good')
+  const [condition, setCondition] = useState<Product['condition']>('Good')
   const [category, setCategory] = useState('Books')
   const [desc, setDesc] = useState('')
-  const [tags, setTags] = useState([])
+  const [tags, setTags] = useState<string[]>([])
   const [tagInput, setTagInput] = useState('')
-  const [images, setImages] = useState([])
+  const [images, setImages] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
-  const fileInputRef = useRef(null)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
-  const onDrop = (files) => {
+  const onDrop = (files: FileList | null) => {
     if (!files) return
     Array.from(files).slice(0, 6).forEach((f) => {
       const reader = new FileReader()
-      reader.onload = (e) => setImages((s) => [e.target?.result, ...s])
+      reader.onload = (e) => setImages((s) => [e.target?.result as string, ...s])
       reader.readAsDataURL(f)
     })
   }
 
-  const removeImg = (i) => setImages((s) => s.filter((_, idx) => idx !== i))
+  const removeImg = (i: number) => setImages((s) => s.filter((_, idx) => idx !== i))
 
   const addTag = () => {
     const t = tagInput.trim()
@@ -110,7 +109,7 @@ export default function ListItemPage({ onDone }) {
                 </div>
                 <div>
                   <label className="text-sm font-semibold">Condition</label>
-                  <select value={condition} onChange={(e) => setCondition(e.target.value)} className="w-full mt-2 p-2 bg-transparent border rounded-md">
+                  <select value={condition} onChange={(e) => setCondition(e.target.value as Product['condition'])} className="w-full mt-2 p-2 bg-transparent border rounded-md">
                     <option>New</option>
                     <option>Like New</option>
                     <option>Good</option>
@@ -183,5 +182,3 @@ export default function ListItemPage({ onDone }) {
     </div>
   )
 }
-
-

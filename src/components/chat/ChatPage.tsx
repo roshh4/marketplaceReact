@@ -1,14 +1,12 @@
-'use client'
-
 import { useEffect, useRef, useState } from 'react'
 import { X, Send, Check, X as XIcon } from 'lucide-react'
-import { useMarketplace } from '../../state/MarketplaceContext.jsx'
+import { useMarketplace } from '../../state/MarketplaceContext'
 
-export default function ChatPage({ chatId, onClose }) {
+export default function ChatPage({ chatId, onClose }: { chatId: string; onClose: () => void }) {
   const { chats, products, user, pushMessage, purchaseRequests, updatePurchaseRequest } = useMarketplace()
   const chat = chats.find((c) => c.id === chatId)
   const [text, setText] = useState('')
-  const ref = useRef(null)
+  const ref = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     ref.current?.scrollTo({ top: ref.current.scrollHeight, behavior: 'smooth' })
@@ -28,7 +26,7 @@ export default function ChatPage({ chatId, onClose }) {
     }, 900 + Math.random() * 1200)
   }
 
-  const handlePurchaseRequest = (requestId, status) => {
+  const handlePurchaseRequest = (requestId: string, status: 'accepted' | 'declined') => {
     updatePurchaseRequest(requestId, status)
   }
 
@@ -77,8 +75,7 @@ export default function ChatPage({ chatId, onClose }) {
       <div className="p-4 border-t border-white/6 flex gap-2 rounded-bl-3xl" style={{ marginBottom: '8px' }}>
         <input
           value={text}
-          onChange={(e) => setText(e.target.value)
-          }
+          onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && send()}
           className="flex-1 p-3 rounded-md bg-transparent border"
           placeholder="Type a message..."
@@ -90,5 +87,3 @@ export default function ChatPage({ chatId, onClose }) {
     </div>
   )
 }
-
-

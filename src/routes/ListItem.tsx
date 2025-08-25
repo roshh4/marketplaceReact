@@ -1,22 +1,23 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMarketplace } from '../state/MarketplaceContext.jsx'
-import ListItemPage from '../components/listing/ListItemPage.jsx'
+import { useMarketplace } from '../state/MarketplaceContext'
+import ListItemPage from '../components/listing/ListItemPage'
 import { motion } from 'framer-motion'
 
 export default function ListItemRoute() {
   const navigate = useNavigate()
-  const { user } = useMarketplace()
+  const { user, isHydrated } = useMarketplace()
 
   useEffect(() => {
+    if (!isHydrated) return
     if (!user) navigate('/')
-  }, [user, navigate])
+  }, [user, navigate, isHydrated])
 
   const handleDone = () => navigate('/marketplace')
 
-  if (!user) {
+  if (!isHydrated || !user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#0b1220] to-[#061028] text-white font-sans flex items-center justify-center">
         <div className="text-center">

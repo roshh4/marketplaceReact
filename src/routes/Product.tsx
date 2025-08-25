@@ -2,29 +2,30 @@
 
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useMarketplace } from '../state/MarketplaceContext.jsx'
-import ProductFull from '../components/product/ProductFull.jsx'
-import ChatPage from '../components/chat/ChatPage.jsx'
+import { useMarketplace } from '../state/MarketplaceContext'
+import ProductFull from '../components/product/ProductFull'
+import ChatPage from '../components/chat/ChatPage'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export default function ProductRoute() {
   const navigate = useNavigate()
   const params = useParams()
-  const { user, products } = useMarketplace()
-  const [productId, setProductId] = useState(null)
-  const [activeChat, setActiveChat] = useState(null)
+  const { user, products, isHydrated } = useMarketplace()
+  const [productId, setProductId] = useState<string | null>(null)
+  const [activeChat, setActiveChat] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!isHydrated) return
     if (!user) { navigate('/'); return }
-    const id = params.id
+    const id = params.id as string | undefined
     if (id) setProductId(id)
-  }, [params.id, user, navigate])
+  }, [params.id, user, navigate, isHydrated])
 
   const handleBack = () => navigate('/marketplace')
-  const handleOpenChat = (chatId) => setActiveChat(chatId)
+  const handleOpenChat = (chatId: string) => setActiveChat(chatId)
   const closeChat = () => setActiveChat(null)
 
-  if (!user) {
+  if (!isHydrated || !user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#0b1220] to-[#061028] text-white font-sans flex items-center justify-center">
         <div className="text-center">

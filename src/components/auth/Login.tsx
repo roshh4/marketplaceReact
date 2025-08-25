@@ -1,32 +1,36 @@
-'use client'
-
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { User, Mail, Chrome } from 'lucide-react'
-import { useMarketplace } from '../../state/MarketplaceContext.jsx'
-import GlassCard from '../ui/GlassCard.jsx'
-import Spinner from '../ui/Spinner.jsx'
-import { uid } from '../../utils.js'
+import { useMarketplace } from '../../state/MarketplaceContext'
+import GlassCard from '../ui/GlassCard'
+import Spinner from '../ui/Spinner'
+import { uid } from '../../utils'
 
-export default function Login({ onLogin }) {
+export default function Login({ onLogin }: { onLogin?: () => void }) {
   const { updateUser } = useMarketplace()
   const [loading, setLoading] = useState(false)
   const [showAdminForm, setShowAdminForm] = useState(false)
   const [otpSent, setOtpSent] = useState(false)
   const [form, setForm] = useState({ email: '', password: '', otp: '' })
 
-  const handleSignInClick = (provider) => {
+  const handleSignInClick = (provider: 'google' | 'microsoft' | 'admin' | 'demo') => {
+    if (provider === 'google') {
+      return
+    }
     if (provider === 'admin') {
       setShowAdminForm(true)
       setForm((prev) => ({ ...prev, email: 'admin@gmail.com' }))
-    } else {
-      const demoUserInfo = { id: uid('u'), name: provider === 'microsoft' ? 'Microsoft User' : 'Demo User', email: provider === 'microsoft' ? 'user@outlook.com' : 'demo@example.com', picture: 'https://via.placeholder.com/150' }
-      updateUser({ id: demoUserInfo.id, name: demoUserInfo.name, email: demoUserInfo.email, avatar: demoUserInfo.picture })
-      if (onLogin) onLogin()
+      return
     }
+    const info = provider === 'microsoft'
+      ? { id: uid('u'), name: 'Microsoft User', email: 'user@outlook.com', avatar: 'https://via.placeholder.com/150', role: 'user' }
+      : { id: uid('u'), name: 'Demo User', email: 'demo@example.com', avatar: 'https://via.placeholder.com/150', role: 'user' }
+
+    updateUser(info)
+    onLogin?.()
   }
 
-  const handleAdminSubmit = async (e) => {
+  const handleAdminSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!otpSent) {
       setLoading(true)
@@ -36,9 +40,9 @@ export default function Login({ onLogin }) {
       setTimeout(() => {
         const emailLower = form.email.toLowerCase()
         if (emailLower === 'admin@gmail.com') {
-          updateUser({ id: uid('u'), name: form.email.split('@')[0], email: form.email, avatar: 'https://via.placeholder.com/150', isAdmin: true })
+          updateUser({ id: uid('u'), name: form.email.split('@')[0], email: form.email, avatar: 'https://via.placeholder.com/150', role: 'admin' })
           setLoading(false)
-          if (onLogin) onLogin()
+          onLogin?.()
           return
         }
       }, 1000)
@@ -55,18 +59,23 @@ export default function Login({ onLogin }) {
             {!showAdminForm && (
               <motion.div key="signin" initial={{ opacity: 1 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
                 <GlassCard>
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <p className="font-semibold">Sign in</p>
                     <div className="flex gap-3">
-                      {[
-                        { name: 'Microsoft', onClick: () => handleSignInClick('microsoft') },
-                        { name: 'Admin', onClick: () => handleSignInClick('admin') },
-                        { name: 'Demo', onClick: () => handleSignInClick('demo') },
-                      ].map((p) => (
-                        <button key={p.name} onClick={p.onClick} className="flex-1 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 bg-white/6 hover:bg-white/8">
-                          <User size={16} /> <span className="text-sm">{p.name}</span>
-                        </button>
-                      ))}
+                      <button onClick={() => handleSignInClick('google')} className="flex-1 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 bg-white/6 hover:bg-white/8" title="Google sign-in disabled">
+                        <Chrome size={16} /> <span className="text-sm">Google</span>
+                      </button>
+                      <button onClick={() => handleSignInClick('microsoft')} className="flex-1 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 bg-white/6 hover:bg-white/8">
+                        <User size={16} /> <span className="text-sm">Microsoft</span>
+                      </button>
+                      <button onClick={() => handleSignInClick('admin')} className="flex-1 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 bg-white/6 hover:bg-white/8">
+                        <Mail size={16} /> <span className="text-sm">Admin</span>
+                      </button>
+                    </div>
+                    <div className="pt-1">
+                      <button onClick={() => handleSignInClick('demo')} className="w-full py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-cyan-400 font-semibold">
+                        Continue as Demo User
+                      </button>
                     </div>
                   </div>
                 </GlassCard>
@@ -126,5 +135,3 @@ export default function Login({ onLogin }) {
     </div>
   )
 }
-
-

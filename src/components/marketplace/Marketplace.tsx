@@ -1,30 +1,27 @@
-'use client'
-
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { useMarketplace } from '../../state/MarketplaceContext.jsx'
-import { placeholderImage, nowIso } from '../../utils.js'
-import Header from './Header.jsx'
-import ProductCard from './ProductCard.jsx'
-import FloatingActions from './FloatingActions.jsx'
+import { useMarketplace } from '../../state/MarketplaceContext'
+import { placeholderImage, nowIso } from '../../utils'
+import Header from './Header'
+import ProductCard from './ProductCard'
+import FloatingActions from './FloatingActions'
+import { Product } from '../../types'
 
-export default function Marketplace({ onOpenChat }) {
+export default function Marketplace({ onOpenChat }: { onOpenChat: (chatId: string) => void }) {
   const { products, setProducts, favorites, toggleFavorite, user } = useMarketplace()
   const [query, setQuery] = useState('')
-  const [filtered, setFiltered] = useState(products)
+  const [filtered, setFiltered] = useState<Product[]>(products)
   const isAdmin = Boolean(user?.isAdmin)
 
   useEffect(() => {
     const q = query.trim().toLowerCase()
     if (!q) return setFiltered(products)
-    setFiltered(
-      products.filter((p) => (p.title + ' ' + p.description + ' ' + p.tags.join(' ')).toLowerCase().includes(q))
-    )
+    setFiltered(products.filter((p: Product) => (p.title + ' ' + p.description + ' ' + p.tags.join(' ')).toLowerCase().includes(q)))
   }, [query, products])
 
   useEffect(() => {
     if (products.length === 0) {
-      const sample = Array.from({ length: 6 }).map((_, i) => ({
+      const sample: Product[] = Array.from({ length: 6 }).map((_, i) => ({
         id: `p_${Math.random().toString(36).slice(2, 9)}`,
         title: ['Calculus Book', 'Mechanical Kit', 'Laptop Sleeve', 'Graphing Calculator', 'USB Microphone', 'Data Structures Book'][i % 6],
         price: [150, 450, 299, 900, 1200, 200][i % 6],
@@ -41,7 +38,7 @@ export default function Marketplace({ onOpenChat }) {
     }
   }, [products.length, setProducts])
 
-  const handleDeleteProduct = (id) => {
+  const handleDeleteProduct = (id: string) => {
     setProducts(products.filter((p) => p.id !== id))
   }
 
@@ -74,5 +71,3 @@ export default function Marketplace({ onOpenChat }) {
     </div>
   )
 }
-
-
